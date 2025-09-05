@@ -598,7 +598,11 @@
         // Live Clock Functions
         function updateClock() {
             const now = new Date();
-            const timeString = now.toLocaleTimeString();
+            const timeString = now.toLocaleTimeString([], { 
+            hour: '2-digit', 
+            minute: '2-digit',
+            hour12: true
+            });
             const dateString = now.toLocaleDateString('en-US', { 
                 weekday: 'long', 
                 year: 'numeric', 
