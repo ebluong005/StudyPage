@@ -507,14 +507,7 @@
                         <button class="btn" onclick="pauseTimer()">Pause</button>
                         <button class="btn" onclick="resetTimer()">Reset</button>
                     </div>
-                    <div class="timer-settings">
-                        <span>Work: <span id="work-time">25</span>m</span>
-                        <span>Break: <span id="break-time">5</span>m</span>
-                        <span>Long Break: <span id="long-break-time">15</span>m</span>
-                    </div>
-                    <div class="session-counter">
-                        Sessions Completed: <span id="session-count">0</span>
-                    </div>
+                    
                     <div class="audio-controls">
                         <button class="audio-toggle" onclick="toggleAudio()">
                             <i class="fas fa-volume-up" id="audio-icon"></i> Audio: <span id="audio-status">ON</span>
@@ -527,10 +520,10 @@
             <div>
                 <!-- YouTube Video -->
                 <div class="card">
-                    <h2><i class="fab fa-youtube"></i> Study Video</h2>
+                    <h2><i class="fab fa-youtube"></i> Cool View </h2>
                     <div class="youtube-container">
                         <iframe class="youtube-embed" 
-                                src="https://www.youtube.com/embed/jfKfPfyJRdk?autoplay=0&mute=1" 
+                                src="https://www.youtube.com/watch?v=xg1gNlxto2M&ab_channel=Choolutter" 
                                 title="Study Music" 
                                 allowfullscreen>
                         </iframe>
@@ -576,7 +569,7 @@
         let todos = JSON.parse(localStorage.getItem('todos')) || [];
         let currentFilter = 'all';
         let timerInterval = null;
-        let currentTime = 50 * 60; // 25 minutes in seconds
+        let currentTime = 50 * 60; // 50 minutes in seconds
         let isRunning = false;
         let isWorkSession = true;
         let sessionsCompleted = parseInt(localStorage.getItem('sessionsCompleted')) || 0;
