@@ -1,1 +1,909 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Baby Jingxiu's Study Spot</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Animated City Background */
+        .city-background {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 300px;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .city-skyline {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 100%;
+            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 300'%3E%3Cpath d='M0 300h50v-120h40v-60h30v-80h60v40h40v-100h50v60h30v-40h70v80h40v-60h50v100h30v-80h60v120h40v-100h80v140h50v-160h40v180h30v-120h60v160h50v-140h40v180h60v-200h80v240h200V300z' fill='%23000'/%3E%3C/svg%3E") repeat-x;
+            background-size: 1200px 300px;
+            opacity: 0.3;
+        }
+
+        .window {
+            position: absolute;
+            width: 3px;
+            height: 4px;
+            background: #ffd700;
+            border-radius: 1px;
+            animation: twinkle 3s infinite;
+        }
+
+        @keyframes twinkle {
+            0%, 50%, 100% { opacity: 0.2; }
+            25%, 75% { opacity: 1; }
+        }
+
+        /* Window positions */
+        .window:nth-child(1) { bottom: 180px; left: 60px; animation-delay: 0s; }
+        .window:nth-child(2) { bottom: 160px; left: 85px; animation-delay: 0.5s; }
+        .window:nth-child(3) { bottom: 200px; left: 120px; animation-delay: 1s; }
+        .window:nth-child(4) { bottom: 140px; left: 180px; animation-delay: 1.5s; }
+        .window:nth-child(5) { bottom: 190px; left: 220px; animation-delay: 2s; }
+        .window:nth-child(6) { bottom: 170px; left: 280px; animation-delay: 0.3s; }
+        .window:nth-child(7) { bottom: 150px; left: 320px; animation-delay: 0.8s; }
+        .window:nth-child(8) { bottom: 180px; left: 380px; animation-delay: 1.3s; }
+        .window:nth-child(9) { bottom: 160px; left: 420px; animation-delay: 1.8s; }
+        .window:nth-child(10) { bottom: 200px; left: 480px; animation-delay: 2.3s; }
+
+        /* Main Container */
+        .container {
+            position: relative;
+            z-index: 2;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        /* Header */
+        .header {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 20px 30px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .title {
+            font-size: 2.5rem;
+            font-weight: 600;
+            color: #fff;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .live-clock {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            color: #fff;
+        }
+
+        .time {
+            font-size: 2rem;
+            font-weight: 500;
+        }
+
+        .date {
+            font-size: 1rem;
+            opacity: 0.8;
+        }
+
+        /* Main Grid */
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 2fr 1fr;
+            gap: 30px;
+            margin-bottom: 100px;
+        }
+
+        /* Cards */
+        .card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+        }
+
+        .card h2 {
+            color: #fff;
+            margin-bottom: 20px;
+            font-size: 1.3rem;
+            font-weight: 500;
+        }
+
+        /* Todo List */
+        .todo-input {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .todo-input input {
+            flex: 1;
+            padding: 12px 15px;
+            border: none;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.2);
+            color: #fff;
+            font-size: 0.9rem;
+            outline: none;
+        }
+
+        .todo-input input::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: transform 0.2s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .todo-filters {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .filter-btn {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: background 0.2s;
+        }
+
+        .filter-btn.active {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .todo-list {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .todo-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            margin-bottom: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            color: #fff;
+        }
+
+        .todo-item.completed {
+            opacity: 0.6;
+            text-decoration: line-through;
+        }
+
+        .todo-actions {
+            display: flex;
+            gap: 5px;
+        }
+
+        .todo-actions button {
+            background: none;
+            border: none;
+            color: #fff;
+            cursor: pointer;
+            padding: 5px;
+            border-radius: 4px;
+            transition: background 0.2s;
+        }
+
+        .todo-actions button:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        /* Pomodoro Timer */
+        .timer-container {
+            text-align: center;
+            color: #fff;
+        }
+
+        .timer-circle {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            margin: 0 auto 30px;
+            position: relative;
+            background: conic-gradient(#667eea 0deg, rgba(255,255,255,0.2) 0deg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            font-weight: 600;
+        }
+
+        .timer-controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .timer-settings {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+            font-size: 0.9rem;
+        }
+
+        .session-counter {
+            text-align: center;
+            margin-top: 15px;
+            font-size: 1.1rem;
+        }
+
+        /* Calendar */
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            color: #fff;
+        }
+
+        .calendar-nav {
+            background: none;
+            border: none;
+            color: #fff;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 6px;
+            transition: background 0.2s;
+        }
+
+        .calendar-nav:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 5px;
+            font-size: 0.8rem;
+        }
+
+        .calendar-day {
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 6px;
+            color: #fff;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .calendar-day:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .calendar-day.today {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .calendar-day.other-month {
+            opacity: 0.3;
+        }
+
+        /* YouTube and Quick Access */
+        .youtube-container {
+            margin-bottom: 25px;
+        }
+
+        .youtube-embed {
+            width: 100%;
+            height: 200px;
+            border-radius: 10px;
+            border: none;
+        }
+
+        .quick-access {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+        }
+
+        .quick-link {
+            aspect-ratio: 1;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            color: #fff;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .quick-link:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-3px);
+        }
+
+        .quick-link i {
+            font-size: 1.5rem;
+            margin-bottom: 8px;
+        }
+
+        .quick-link span {
+            font-size: 0.8rem;
+            text-align: center;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .title {
+                font-size: 2rem;
+            }
+            
+            .timer-circle {
+                width: 150px;
+                height: 150px;
+                font-size: 2rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+            
+            .container {
+                padding: 15px;
+            }
+            
+            .card {
+                padding: 20px;
+            }
+        }
+
+        /* Audio controls */
+        .audio-controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 15px;
+            justify-content: center;
+        }
+
+        .audio-toggle {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: #fff;
+            padding: 8px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .audio-toggle:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+    </style>
+</head>
+<body>
+    <!-- Animated City Background -->
+    <div class="city-background">
+        <div class="city-skyline"></div>
+        <div class="window"></div>
+        <div class="window"></div>
+        <div class="window"></div>
+        <div class="window"></div>
+        <div class="window"></div>
+        <div class="window"></div>
+        <div class="window"></div>
+        <div class="window"></div>
+        <div class="window"></div>
+        <div class="window"></div>
+    </div>
+
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <h1 class="title">Baby Jingxiu's Study Spot</h1>
+            <div class="live-clock">
+                <div class="time" id="live-time">00:00:00</div>
+                <div class="date" id="live-date">Loading...</div>
+            </div>
+        </header>
+
+        <!-- Main Content Grid -->
+        <div class="main-grid">
+            <!-- Left Column: Todo List + Calendar -->
+            <div>
+                <!-- Todo List -->
+                <div class="card">
+                    <h2><i class="fas fa-list"></i> To-Do List</h2>
+                    <div class="todo-input">
+                        <input type="text" id="todo-input" placeholder="Add a new task...">
+                        <button class="btn" onclick="addTodo()">Add</button>
+                    </div>
+                    <div class="todo-filters">
+                        <button class="filter-btn active" onclick="filterTodos('all')">All</button>
+                        <button class="filter-btn" onclick="filterTodos('active')">Active</button>
+                        <button class="filter-btn" onclick="filterTodos('completed')">Done</button>
+                    </div>
+                    <div class="todo-list" id="todo-list"></div>
+                </div>
+
+                <!-- Calendar -->
+                <div class="card" style="margin-top: 20px;">
+                    <h2><i class="fas fa-calendar"></i> Calendar</h2>
+                    <div class="calendar-header">
+                        <button class="calendar-nav" onclick="previousMonth()">‹</button>
+                        <span id="calendar-month">Loading...</span>
+                        <button class="calendar-nav" onclick="nextMonth()">›</button>
+                    </div>
+                    <div class="calendar-grid" id="calendar-grid"></div>
+                </div>
+            </div>
+
+            <!-- Center Column: Pomodoro Timer -->
+            <div class="card">
+                <h2><i class="fas fa-clock"></i> Pomodoro Timer</h2>
+                <div class="timer-container">
+                    <div class="timer-circle" id="timer-circle">
+                        <span id="timer-display">25:00</span>
+                    </div>
+                    <div class="timer-controls">
+                        <button class="btn" onclick="startTimer()">Start</button>
+                        <button class="btn" onclick="pauseTimer()">Pause</button>
+                        <button class="btn" onclick="resetTimer()">Reset</button>
+                    </div>
+                    <div class="timer-settings">
+                        <span>Work: <span id="work-time">25</span>m</span>
+                        <span>Break: <span id="break-time">5</span>m</span>
+                        <span>Long Break: <span id="long-break-time">15</span>m</span>
+                    </div>
+                    <div class="session-counter">
+                        Sessions Completed: <span id="session-count">0</span>
+                    </div>
+                    <div class="audio-controls">
+                        <button class="audio-toggle" onclick="toggleAudio()">
+                            <i class="fas fa-volume-up" id="audio-icon"></i> Audio: <span id="audio-status">ON</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column: YouTube + Quick Access -->
+            <div>
+                <!-- YouTube Video -->
+                <div class="card">
+                    <h2><i class="fab fa-youtube"></i> Study Video</h2>
+                    <div class="youtube-container">
+                        <iframe class="youtube-embed" 
+                                src="https://www.youtube.com/embed/jfKfPfyJRdk?autoplay=0&mute=1" 
+                                title="Study Music" 
+                                allowfullscreen>
+                        </iframe>
+                    </div>
+                </div>
+
+                <!-- Quick Access Panel -->
+                <div class="card" style="margin-top: 20px;">
+                    <h2><i class="fas fa-link"></i> Quick Access</h2>
+                    <div class="quick-access">
+                        <a href="https://youtube.com" target="_blank" class="quick-link">
+                            <i class="fab fa-youtube"></i>
+                            <span>YouTube</span>
+                        </a>
+                        <a href="https://spotify.com" target="_blank" class="quick-link">
+                            <i class="fab fa-spotify"></i>
+                            <span>Spotify</span>
+                        </a>
+                        <a href="https://chat.openai.com" target="_blank" class="quick-link">
+                            <i class="fas fa-robot"></i>
+                            <span>ChatGPT</span>
+                        </a>
+                        <a href="https://powerscore.com" target="_blank" class="quick-link">
+                            <i class="fas fa-graduation-cap"></i>
+                            <span>PowerScore</span>
+                        </a>
+                        <a href="https://lsatlab.com" target="_blank" class="quick-link">
+                            <i class="fas fa-flask"></i>
+                            <span>LSAT Lab</span>
+                        </a>
+                        <a href="#" class="quick-link" onclick="showSettings()">
+                            <i class="fas fa-cog"></i>
+                            <span>Settings</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global Variables
+        let todos = JSON.parse(localStorage.getItem('todos')) || [];
+        let currentFilter = 'all';
+        let timerInterval = null;
+        let currentTime = 50 * 60; // 25 minutes in seconds
+        let isRunning = false;
+        let isWorkSession = true;
+        let sessionsCompleted = parseInt(localStorage.getItem('sessionsCompleted')) || 0;
+        let audioEnabled = localStorage.getItem('audioEnabled') !== 'false';
+        let currentDate = new Date();
+
+        // Timer settings
+        const WORK_TIME = 50 * 60;
+        const SHORT_BREAK = 10 * 60;
+        const LONG_BREAK = 30 * 60;
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            updateClock();
+            renderTodos();
+            renderCalendar();
+            updateSessionCounter();
+            updateAudioStatus();
+            setInterval(updateClock, 1000);
+        });
+
+        // Live Clock Functions
+        function updateClock() {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString();
+            const dateString = now.toLocaleDateString('en-US', { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric' 
+            });
+            
+            document.getElementById('live-time').textContent = timeString;
+            document.getElementById('live-date').textContent = dateString;
+        }
+
+        // Todo List Functions
+        function addTodo() {
+            const input = document.getElementById('todo-input');
+            const text = input.value.trim();
+            
+            if (text) {
+                const todo = {
+                    id: Date.now(),
+                    text: text,
+                    completed: false,
+                    createdAt: new Date().toISOString()
+                };
+                
+                todos.unshift(todo);
+                saveTodos();
+                renderTodos();
+                input.value = '';
+            }
+        }
+
+        function toggleTodo(id) {
+            const todo = todos.find(t => t.id === id);
+            if (todo) {
+                todo.completed = !todo.completed;
+                saveTodos();
+                renderTodos();
+            }
+        }
+
+        function deleteTodo(id) {
+            todos = todos.filter(t => t.id !== id);
+            saveTodos();
+            renderTodos();
+        }
+
+        function filterTodos(filter) {
+            currentFilter = filter;
+            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            renderTodos();
+        }
+
+        function clearCompleted() {
+            todos = todos.filter(t => !t.completed);
+            saveTodos();
+            renderTodos();
+        }
+
+        function showSettings() {
+            alert('Settings panel coming soon! You can customize timer durations and other preferences here.');
+        }
+
+        function renderTodos() {
+            const todoList = document.getElementById('todo-list');
+            let filteredTodos = todos;
+
+            if (currentFilter === 'active') {
+                filteredTodos = todos.filter(t => !t.completed);
+            } else if (currentFilter === 'completed') {
+                filteredTodos = todos.filter(t => t.completed);
+            }
+
+            todoList.innerHTML = filteredTodos.map(todo => `
+                <div class="todo-item ${todo.completed ? 'completed' : ''}">
+                    <span onclick="toggleTodo(${todo.id})" style="cursor: pointer;">
+                        ${todo.completed ? '✓' : '○'} ${todo.text}
+                    </span>
+                    <div class="todo-actions">
+                        <button onclick="deleteTodo(${todo.id})" title="Delete">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function saveTodos() {
+            localStorage.setItem('todos', JSON.stringify(todos));
+        }
+
+        // Allow Enter key to add todos
+        document.getElementById('todo-input').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                addTodo();
+            }
+        });
+
+        // Pomodoro Timer Functions
+        function startTimer() {
+            if (!isRunning) {
+                isRunning = true;
+                timerInterval = setInterval(updateTimer, 1000);
+                playNotification('start');
+            }
+        }
+
+        function pauseTimer() {
+            if (isRunning) {
+                isRunning = false;
+                clearInterval(timerInterval);
+            }
+        }
+
+        function resetTimer() {
+            isRunning = false;
+            clearInterval(timerInterval);
+            currentTime = WORK_TIME;
+            isWorkSession = true;
+            updateTimerDisplay();
+            updateTimerCircle();
+        }
+
+        function updateTimer() {
+            currentTime--;
+            updateTimerDisplay();
+            updateTimerCircle();
+
+            if (currentTime <= 0) {
+                clearInterval(timerInterval);
+                isRunning = false;
+                document.getElementById('start-btn').textContent = 'Start';
+                playNotification('end');
+                
+                if (isWorkSession) {
+                    sessionsCompleted++;
+                    updateSessionCounter();
+                    localStorage.setItem('sessionsCompleted', sessionsCompleted.toString());
+                    
+                    // Determine break type
+                    if (sessionsCompleted % 4 === 0) {
+                        currentTime = LONG_BREAK;
+                    } else {
+                        currentTime = SHORT_BREAK;
+                    }
+                    isWorkSession = false;
+                } else {
+                    currentTime = WORK_TIME;
+                    isWorkSession = true;
+                }
+                
+                updateTimerDisplay();
+                updateTimerCircle();
+                updateTimerMode();
+                
+                // Auto-start next session (optional - can be removed)
+                setTimeout(() => {
+                    if (!isRunning) {
+                        // Show notification for next session
+                        const nextSession = isWorkSession ? 'work session' : 'break time';
+                        console.log(`Ready for ${nextSession}!`);
+                    }
+                }, 1000);
+            }
+        }
+
+        function updateTimerDisplay() {
+            const minutes = Math.floor(currentTime / 60);
+            const seconds = currentTime % 60;
+            const display = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            document.getElementById('timer-display').textContent = display;
+        }
+
+        function updateTimerCircle() {
+            const totalTime = isWorkSession ? WORK_TIME : (sessionsCompleted % 4 === 0 ? LONG_BREAK : SHORT_BREAK);
+            const progress = ((totalTime - currentTime) / totalTime) * 360;
+            const circle = document.getElementById('timer-circle');
+            
+            if (isWorkSession) {
+                circle.style.background = `conic-gradient(#667eea ${progress}deg, rgba(255,255,255,0.2) ${progress}deg)`;
+            } else {
+                circle.style.background = `conic-gradient(#4ecdc4 ${progress}deg, rgba(255,255,255,0.2) ${progress}deg)`;
+            }
+        }
+
+        function updateSessionCounter() {
+            document.getElementById('session-count').textContent = sessionsCompleted;
+        }
+
+        function toggleAudio() {
+            audioEnabled = !audioEnabled;
+            localStorage.setItem('audioEnabled', audioEnabled.toString());
+            updateAudioStatus();
+        }
+
+        function updateAudioStatus() {
+            const icon = document.getElementById('audio-icon');
+            const status = document.getElementById('audio-status');
+            
+            if (audioEnabled) {
+                icon.className = 'fas fa-volume-up';
+                status.textContent = 'ON';
+            } else {
+                icon.className = 'fas fa-volume-mute';
+                status.textContent = 'OFF';
+            }
+        }
+
+        function playNotification(type) {
+            if (!audioEnabled) return;
+            
+            // Create audio context for notification sounds
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            if (type === 'start') {
+                oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
+            } else {
+                oscillator.frequency.setValueAtTime(600, audioContext.currentTime);
+            }
+            
+            gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+            
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + 0.5);
+        }
+
+        // Calendar Functions
+        function renderCalendar() {
+            const year = currentDate.getFullYear();
+            const month = currentDate.getMonth();
+            
+            // Update month display
+            const monthNames = ["January", "February", "March", "April", "May", "June",
+                "July", "August", "September", "October", "November", "December"];
+            document.getElementById('calendar-month').textContent = `${monthNames[month]} ${year}`;
+            
+            // Get first day of month and number of days
+            const firstDay = new Date(year, month, 1).getDay();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            const daysInPrevMonth = new Date(year, month, 0).getDate();
+            
+            const calendar = document.getElementById('calendar-grid');
+            calendar.innerHTML = '';
+            
+            // Add day headers
+            const dayHeaders = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+            dayHeaders.forEach(day => {
+                const dayElement = document.createElement('div');
+                dayElement.className = 'calendar-day';
+                dayElement.textContent = day;
+                dayElement.style.fontWeight = '600';
+                dayElement.style.background = 'rgba(255,255,255,0.2)';
+                calendar.appendChild(dayElement);
+            });
+            
+            // Add previous month's trailing days
+            for (let i = firstDay - 1; i >= 0; i--) {
+                const dayElement = document.createElement('div');
+                dayElement.className = 'calendar-day other-month';
+                dayElement.textContent = daysInPrevMonth - i;
+                calendar.appendChild(dayElement);
+            }
+            
+            // Add current month's days
+            const today = new Date();
+            for (let day = 1; day <= daysInMonth; day++) {
+                const dayElement = document.createElement('div');
+                dayElement.className = 'calendar-day';
+                dayElement.textContent = day;
+                
+                if (year === today.getFullYear() && month === today.getMonth() && day === today.getDate()) {
+                    dayElement.classList.add('today');
+                }
+                
+                calendar.appendChild(dayElement);
+            }
+            
+            // Add next month's leading days
+            const totalCells = calendar.children.length;
+            const remainingCells = 42 - totalCells; // 6 rows × 7 days = 42 cells
+            
+            for (let day = 1; day <= remainingCells; day++) {
+                const dayElement = document.createElement('div');
+                dayElement.className = 'calendar-day other-month';
+                dayElement.textContent = day;
+                calendar.appendChild(dayElement);
+            }
+        }
+
+        function previousMonth() {
+            currentDate.setMonth(currentDate.getMonth() - 1);
+            renderCalendar();
+        }
+
+        function nextMonth() {
+            currentDate.setMonth(currentDate.getMonth() + 1);
+            renderCalendar();
+        }
+    </script>
