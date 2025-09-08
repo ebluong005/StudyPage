@@ -279,6 +279,14 @@
             font-size: 1.1rem;
         }
 
+        .timer-mode {
+            text-align: center;
+            margin-bottom: 15px;
+            font-size: 1rem;
+            color: #4ecdc4;
+            font-weight: 500;
+        }
+
         /* Calendar */
         .calendar-header {
             display: flex;
@@ -499,6 +507,7 @@
             <div class="card">
                 <h2><i class="fas fa-clock"></i> Pomodoro Timer</h2>
                 <div class="timer-container">
+                    <div class="timer-mode" id="timer-mode">Work Session</div>
                     <div class="timer-circle" id="timer-circle">
                         <span id="timer-display">50:00</span>
                     </div>
@@ -509,7 +518,7 @@
                     </div>
 
                     <div class="session-counter">
-                          Sessions completed: <span id="session-count">0</span>
+                        Sessions completed: <span id="session-count">0</span>
                     </div>
               
                     <div class="audio-controls">
@@ -570,38 +579,63 @@
 
     <script>
         // Global Variables
-        let todos = JSON.parse(localStorage.getItem('todos')) || [];
+        let todos = [];
         let currentFilter = 'all';
         let timerInterval = null;
-        let currentTime = 50 * 60; // 50 minutes in seconds
+        let currentTime = 50 * 60; // 50 minutes in seconds (proper work session length)
         let isRunning = false;
         let isWorkSession = true;
-        let sessionsCompleted = parseInt(localStorage.getItem('sessionsCompleted')) || 0;
-        let audioEnabled = localStorage.getItem('audioEnabled') !== 'false';
+        let sessionsCompleted = 0;
+        let audioEnabled = true;
         let currentDate = new Date();
 
-        // Timer settings
-        const WORK_TIME = 50 * 60;
-        const SHORT_BREAK = 10 * 60;
-        const LONG_BREAK = 30 * 60;
+        // Timer settings (using shorter durations for testing - you can change these back)
+        const WORK_TIME = 50 * 60; // 50 minutes
+        const SHORT_BREAK = 10 * 60; // 10 minutes  
+        const LONG_BREAK = 30 * 60; // 30 minutes
+
+        // For testing purposes, use these shorter durations:
+        // const WORK_TIME = 5; // 5 seconds
+        // const SHORT_BREAK = 3; // 3 seconds
+        // const LONG_BREAK = 5; // 5 seconds
 
         // Initialize on page load
         document.addEventListener('DOMContentLoaded', function() {
+            loadFromStorage();
             updateClock();
             renderTodos();
             renderCalendar();
             updateSessionCounter();
             updateAudioStatus();
+            updateTimerMode();
+            updateTimerDisplay();
+            updateTimerCircle();
             setInterval(updateClock, 1000);
         });
+
+        // Storage functions
+        function loadFromStorage() {
+            // Load todos - use in-memory storage instead of localStorage
+            todos = [];
+            
+            // Load session data - use in-memory storage instead of localStorage
+            sessionsCompleted = 0;
+            audioEnabled = true;
+        }
+
+        function saveToStorage() {
+            // In a real implementation, you would save to localStorage here
+            // For now, we'll just keep everything in memory
+            console.log('Sessions completed:', sessionsCompleted);
+        }
 
         // Live Clock Functions
         function updateClock() {
             const now = new Date();
             const timeString = now.toLocaleTimeString([], { 
-            hour: '2-digit', 
-            minute: '2-digit',
-            hour12: true
+                hour: '2-digit', 
+                minute: '2-digit',
+                hour12: true
             });
             const dateString = now.toLocaleDateString('en-US', { 
                 weekday: 'long', 
@@ -628,7 +662,6 @@
                 };
                 
                 todos.unshift(todo);
-                saveTodos();
                 renderTodos();
                 input.value = '';
             }
@@ -638,14 +671,12 @@
             const todo = todos.find(t => t.id === id);
             if (todo) {
                 todo.completed = !todo.completed;
-                saveTodos();
                 renderTodos();
             }
         }
 
         function deleteTodo(id) {
             todos = todos.filter(t => t.id !== id);
-            saveTodos();
             renderTodos();
         }
 
@@ -654,16 +685,6 @@
             document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
             event.target.classList.add('active');
             renderTodos();
-        }
-
-        function clearCompleted() {
-            todos = todos.filter(t => !t.completed);
-            saveTodos();
-            renderTodos();
-        }
-
-        function showSettings() {
-            alert('Settings panel coming soon! You can customize timer durations and other preferences here.');
         }
 
         function renderTodos() {
@@ -688,10 +709,6 @@
                     </div>
                 </div>
             `).join('');
-        }
-
-        function saveTodos() {
-            localStorage.setItem('todos', JSON.stringify(todos));
         }
 
         // Allow Enter key to add todos
@@ -720,10 +737,11 @@
         function resetTimer() {
             isRunning = false;
             clearInterval(timerInterval);
-            currentTime = WORK_TIME;
             isWorkSession = true;
+            currentTime = WORK_TIME;
             updateTimerDisplay();
             updateTimerCircle();
+            updateTimerMode();
         }
 
         function updateTimer() {
@@ -732,40 +750,40 @@
             updateTimerCircle();
 
             if (currentTime <= 0) {
-                clearInterval(timerInterval);
+                // Timer completed
                 isRunning = false;
-                document.getElementById('start-btn').textContent = 'Start';
+                clearInterval(timerInterval);
                 playNotification('end');
                 
                 if (isWorkSession) {
+                    // Work session completed - increment counter
                     sessionsCompleted++;
                     updateSessionCounter();
-                    localStorage.setItem('sessionsCompleted', sessionsCompleted.toString());
+                    saveToStorage();
                     
-                    // Determine break type
+                    // Switch to break
                     if (sessionsCompleted % 4 === 0) {
+                        // Every 4th session gets a long break
                         currentTime = LONG_BREAK;
                     } else {
+                        // Regular short break
                         currentTime = SHORT_BREAK;
                     }
                     isWorkSession = false;
+                    
+                    alert(`Work session complete! You've completed ${sessionsCompleted} sessions. Time for a ${sessionsCompleted % 4 === 0 ? 'long' : 'short'} break!`);
+                    
                 } else {
+                    // Break completed - switch back to work
                     currentTime = WORK_TIME;
                     isWorkSession = true;
+                    
+                    alert('Break time over! Ready for another work session?');
                 }
                 
                 updateTimerDisplay();
                 updateTimerCircle();
                 updateTimerMode();
-                
-                // Auto-start next session (optional - can be removed)
-                setTimeout(() => {
-                    if (!isRunning) {
-                        // Show notification for next session
-                        const nextSession = isWorkSession ? 'work session' : 'break time';
-                        console.log(`Ready for ${nextSession}!`);
-                    }
-                }, 1000);
             }
         }
 
@@ -777,7 +795,13 @@
         }
 
         function updateTimerCircle() {
-            const totalTime = isWorkSession ? WORK_TIME : (sessionsCompleted % 4 === 0 ? LONG_BREAK : SHORT_BREAK);
+            let totalTime;
+            if (isWorkSession) {
+                totalTime = WORK_TIME;
+            } else {
+                totalTime = (sessionsCompleted % 4 === 0) ? LONG_BREAK : SHORT_BREAK;
+            }
+            
             const progress = ((totalTime - currentTime) / totalTime) * 360;
             const circle = document.getElementById('timer-circle');
             
@@ -788,14 +812,26 @@
             }
         }
 
+        function updateTimerMode() {
+            const modeElement = document.getElementById('timer-mode');
+            if (isWorkSession) {
+                modeElement.textContent = 'Work Session';
+                modeElement.style.color = '#667eea';
+            } else {
+                const breakType = (sessionsCompleted % 4 === 0) ? 'Long Break' : 'Short Break';
+                modeElement.textContent = breakType;
+                modeElement.style.color = '#4ecdc4';
+            }
+        }
+
         function updateSessionCounter() {
             document.getElementById('session-count').textContent = sessionsCompleted;
         }
 
         function toggleAudio() {
             audioEnabled = !audioEnabled;
-            localStorage.setItem('audioEnabled', audioEnabled.toString());
             updateAudioStatus();
+            saveToStorage();
         }
 
         function updateAudioStatus() {
@@ -814,25 +850,33 @@
         function playNotification(type) {
             if (!audioEnabled) return;
             
-            // Create audio context for notification sounds
-            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-            const oscillator = audioContext.createOscillator();
-            const gainNode = audioContext.createGain();
-            
-            oscillator.connect(gainNode);
-            gainNode.connect(audioContext.destination);
-            
-            if (type === 'start') {
-                oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
-            } else {
-                oscillator.frequency.setValueAtTime(600, audioContext.currentTime);
+            try {
+                // Create audio context for notification sounds
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                if (type === 'start') {
+                    oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
+                } else {
+                    oscillator.frequency.setValueAtTime(600, audioContext.currentTime);
+                }
+                
+                gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+                
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + 0.5);
+            } catch (error) {
+                console.log('Audio notification failed:', error);
             }
-            
-            gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
-            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
-            
-            oscillator.start(audioContext.currentTime);
-            oscillator.stop(audioContext.currentTime + 0.5);
+        }
+
+        function showSettings() {
+            alert('Settings panel coming soon! You can customize timer durations and other preferences here.');
         }
 
         // Calendar Functions
@@ -908,3 +952,5 @@
             renderCalendar();
         }
     </script>
+</body>
+</html>
